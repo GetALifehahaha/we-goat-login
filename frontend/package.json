@@ -12,9 +12,14 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
     "axios": "^1.15.2",
+    "clsx": "^2.1.1",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^1.9.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.2",
     "simple-jwt": "^1.0.3",
+    "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.4",
     "uuid": "^14.0.0"
   },
