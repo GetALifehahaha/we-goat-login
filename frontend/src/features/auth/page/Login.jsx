@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom';
 import authService from '../services/authService';
-// import { X } from 'lucide-react';
-import { Input, Button, PageLogo } from '../../shared/';
+import { Input, Button, PageLogo, Feedback } from '../../shared/';
+import { useNavigate } from 'react-router-dom';
 
 const rules = [
     {
@@ -15,13 +15,17 @@ const rules = [
 
 const Login = () => {
 
+    const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
         username: '', password: ''
     });
 
     const [fieldError, setFieldError] = useState({
         username: '', password: ''
-    })
+    });
+
+    const [feedback, setFeedback] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const handleFieldError = (field, message) => {
         setFieldError((prevErrors) => {
@@ -72,7 +76,6 @@ const Login = () => {
         return valid;
     }
 
-    console.log("Field Error: ", fieldError)
 
     const handleChange = (e) => {
         setCredentials(() => {
@@ -81,6 +84,40 @@ const Login = () => {
                 [e.target.name]: e.target.value
             }
         });
+    }
+
+    const handleFeedback = (responses) => {
+        const mappedErrors = Object.values(responses).map(messages => ({
+            type: 'error',
+            message: messages.join(', ')
+        }));
+        setFeedback(mappedErrors);
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setFeedback([]);
+
+        if (!validateFields()) return;
+
+        setLoading(true);
+
+        try {
+            const response = await authService.login(credentials);
+
+            console.log(response)
+
+            if (response) {
+                navigate('/');
+            } else if ([400, 401, 402, 403, 404, 405].find((error) => error == response.status)) {
+                handleFeedback(response.data);
+            }
+
+        } catch (error) {
+            setFeedback([{ type: 'error', message: error }]);
+        } finally {
+            setLoading(false);
+        }
     }
 
 
@@ -98,13 +135,7 @@ const Login = () => {
                     <Link to='/signup' className='text-mauve-400 text-sm'>New to We-Goat? <strong className='font-bold text-mauve-100'>Signup here</strong></Link>
 
                 </div>
-                <form onSubmit={async (e) => {
-                    e.preventDefault();
-
-                    if (!validateFields()) return
-
-                    authService.login(credentials);
-                }}
+                <form onSubmit={handleSubmit}
                     className='flex flex-col p-2 gap-4 my-12'
                 >
                     <Input
@@ -132,9 +163,11 @@ const Login = () => {
 
                     />
 
-                    <Button type='submit' text='Login' className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70 mt-0' />
+                    <Button type='submit' loading={loading} text='Login' className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70 mt-0' />
                     <Link to='/forgotPassword' className='text-white text-xs font-semibold'>Forgot Password?</Link>
                 </form>
+
+                <Feedback feedback={feedback} />
 
                 <hr className='w-full text-white/20' />
                 <h5 className='text-xs text-white/30 text-center mt-2 font-light tracking-wide'>Empowered by Django, DRF, and React</h5>

@@ -28,7 +28,11 @@ class AuthService {
 
             throw new Error("No access token received.") 
         } catch (error) {
-            console.error("Login error: ", error)
+            console.error("Login error: ", error.status)
+
+            if (error.status === 401) {
+                throw "Invalid username or password."
+            }
             throw error
         }
     }
