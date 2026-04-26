@@ -39,9 +39,9 @@ export const AuthProvider = ({ children }) => {
         initializeAuth();
     }, []);
 
-    const login = async (username, password) => {
+    const login = async (credentials) => {
         try {
-            const userData = await authService.login(username, password);
+            const userData = await authService.login(credentials);
             setUser(userData);
             return userData;
         } catch (error) {

@@ -56,7 +56,6 @@ apiService.interceptors.response.use(
                 console.error("Refresh error: ", refreshError);
     
                 await authService.logout();
-                window.location.href = '/login';
                 return Promise.reject(refreshError)
             } finally {
                 authService.isRefreshing = false;

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom';
-import authService from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 import { Input, Button, PageLogo, Feedback } from '../../shared/';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,10 +14,10 @@ const rules = [
 ]
 
 const Login = () => {
-
+    const { login } = useAuth();
     const navigate = useNavigate();
     const [credentials, setCredentials] = useState({
-        username: '', password: ''
+        username: 'jonathan', password: '2pilak123'
     });
 
     const [fieldError, setFieldError] = useState({
@@ -103,9 +103,10 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await authService.login(credentials);
+            const response = await login(credentials);
 
             console.log(response)
+
 
             if (response) {
                 navigate('/');

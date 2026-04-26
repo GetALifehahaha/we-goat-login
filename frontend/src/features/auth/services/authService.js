@@ -7,7 +7,7 @@ class AuthService {
     constructor () {
         this.isRefreshing = false;
         this.failedQueue = [];
-        this.token = null
+        this.token = localStorage.getItem('token');
     }
 
     configureAxios() {
@@ -23,6 +23,8 @@ class AuthService {
 
             if (response.data.token) {
                 this.token = response.data.token
+                localStorage.setItem('token', this.token);
+                localStorage.setItem('refreshToken', response.data.refresh);
                 return this.decodeToken(response.data.token)
             }
 
@@ -41,8 +43,8 @@ class AuthService {
         this.token = null;
         this.isRefreshing = false;
         this.failedQueue = []
-
-        alert("Hie")
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
 
         return axios
         .post(BASE_URL + '/logout/', {}, { withCredentials: true } )
@@ -112,17 +114,24 @@ class AuthService {
 
     async refreshToken() {
         try {
-            // refresh token is already part of the cookie, wow
-            const response = await axios.post(BASE_URL + '/users/refresh/', {}, { withCredentials: true });
+            const refresh = localStorage.getItem('refreshToken');
+        
+            if (!refresh) {
+                throw new Error("No refresh token available");
+            }
+            const response = await axios.post(BASE_URL + '/users/refresh/', { refresh: refresh });
 
             if (response.data.token) {
                 this.token = response.data.token
+                localStorage.setItem('token', this.token);
                 return response.data.token
             }
 
             throw new Error("No access token in refresh response");
         } catch (error) {
             this.token = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
             throw error;
         }
     }
