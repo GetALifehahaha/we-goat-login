@@ -8,6 +8,7 @@ export {default as Layout} from './components/Layout.jsx'
 export {default as Sidebar} from './components/Sidebar.jsx'
 export {default as Button} from './components/Button.jsx'
 export {default as Feedback} from './components/Feedback.jsx'
+export {default as PageLogo} from './components/PageLogo.jsx'
 
 // CONFIG
 

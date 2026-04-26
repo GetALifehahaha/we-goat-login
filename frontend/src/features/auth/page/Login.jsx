@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom';
 import authService from '../services/authService';
 // import { X } from 'lucide-react';
-import { Input, Button } from '../../shared/';
+import { Input, Button, PageLogo } from '../../shared/';
 
 const rules = [
     {
@@ -85,13 +85,18 @@ const Login = () => {
 
 
     return (
-        <div className='absolute left-0 top-0 max-w-full w-full max-h-screen h-full bg-black/10 backdrop-blur overflow-hidden
+        <div className='relative left-0 top-0 max-w-full w-full h-screen bg-linear-to-br from-neutral-800 to-neutral-900 backdrop-blur overflow-hidden
                         flex justify-center items-center
         '>
-            <div className='bg-slate-100 w-120 p-4 rounded-xl border border-slate-300 transition-all'>
-                <div className='text-md flex flex-col items-center justify-between mb-8'>
-                    <h5 className='text-slate-700 text-xs font-semibold tracking-wide'>Login</h5>
-                    <h1 className='font-bold text-lg text-slate-800'>We-Goat</h1>
+            <div className='w-100 p-4 rounded-xl transition-all '>
+                <div className='text-md flex flex-col items-center justify-between'>
+                    <PageLogo />
+
+                    <h1 className='text-mauve-50 text-2xl font-semibold mt-12 mb-4'>
+                        Welcome to We-Goat
+                    </h1>
+                    <Link to='/signup' className='text-mauve-400 text-sm'>New to We-Goat? <strong className='font-bold text-mauve-100'>Signup here</strong></Link>
+
                 </div>
                 <form onSubmit={async (e) => {
                     e.preventDefault();
@@ -100,37 +105,39 @@ const Login = () => {
 
                     authService.login(credentials);
                 }}
-                    className='flex flex-col p-2 gap-4'
+                    className='flex flex-col p-2 gap-4 my-12'
                 >
                     <Input
                         type='text'
                         name='username'
-                        label='Username'
                         value={credentials.username}
+                        hasCounter={false}
                         onChange={handleChange}
-                        placeholder='Username'
+                        placeholder='Your username'
                         error={fieldError.username}
                         onClear={clearField}
+                        className=' rounded-2xl bg-neutral-900'
                     />
 
                     <Input
                         type='password'
                         name='password'
-                        label='Password'
+                        hasCounter={false}
                         value={credentials.password}
                         onChange={handleChange}
-                        placeholder='Password'
+                        placeholder='Your password'
                         error={fieldError.password}
                         onClear={clearField}
+                        className='rounded-2xl bg-neutral-900'
+
                     />
 
-                    <Button type='submit' text='Login' />
+                    <Button type='submit' text='Login' className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70 mt-0' />
+                    <Link to='/forgotPassword' className='text-white text-xs font-semibold'>Forgot Password?</Link>
                 </form>
 
-                <div className='w-80 flex mx-auto my-4 items-center justify-between text-xs font-medium text-mauve-600'>
-                    <Link to='/signup' className='hover:text-mauve-800'>New to We-Goat? Signup here</Link>
-                    <Link to='/forgotPassword' className='hover:text-mauve-800'>Forgot Password?</Link>
-                </div>
+                <hr className='w-full text-white/20' />
+                <h5 className='text-xs text-white/30 text-center mt-2 font-light tracking-wide'>Empowered by Django, DRF, and React</h5>
             </div>
         </div >
     )

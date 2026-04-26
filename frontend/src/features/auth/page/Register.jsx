@@ -1,19 +1,17 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-// import { X } from 'lucide-react';
-import { Input, Button, regex, Feedback } from '../../shared/';
+import { Input, Button, regex, Feedback, PageLogo } from '../../shared/';
 
 const rules = [
-    { field: 'username', limit: 255, min: 8, required: true },
-    { field: 'password', limit: 255, min: 8, required: true },
-    { field: 'firstName', limit: 255, min: 8, required: true },
-    { field: 'lastName', limit: 255, min: 8, required: true },
+    { field: 'firstName', limit: 255, min: 2, required: true },
+    { field: 'lastName', limit: 255, min: 2, required: true },
     { field: 'email', limit: 255, min: 8, required: true, isEmail: true },
+    { field: 'username', limit: 255, min: 4, required: true },
+    { field: 'password', limit: 255, min: 8, required: true },
 ]
 
 const Register = () => {
-
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -25,181 +23,168 @@ const Register = () => {
         firstName: '', lastName: '', email: '', username: '', password: ''
     });
 
-    const [feedback, setFeedback] = useState([{ type: '', message: '' }])
-
-    const handleFieldError = (field, message) => {
-        setFieldError((prevErrors) => {
-            return {
-                ...prevErrors,
-                [field]: message
-            }
-        })
-    }
+    const [feedback, setFeedback] = useState([]);
 
     const clearField = (field) => {
-        setCredentials(credentials => {
-            return {
-                ...credentials, [field]: ''
-            }
-        })
+        setCredentials(prev => ({ ...prev, [field]: '' }));
+        setFieldError(prev => ({ ...prev, [field]: '' }));
     }
 
     const validateFields = () => {
-        let valid = true;
+        let isValid = true;
+        const newErrors = { firstName: '', lastName: '', email: '', username: '', password: '' };
 
-        Object.entries(credentials).forEach((info) => {
-            const field = info[0]; const value = info[1];
+        for (const [field, value] of Object.entries(credentials)) {
+            const rule = rules.find(r => r.field === field);
+            if (!rule) continue;
 
-            const rule = rules.find(rule => rule.field == field);
-            let pass = true;
+            const trimmedValue = value.trim();
 
-            if (rule?.limit && value.trim().length > rule?.limit) {
-                handleFieldError(field, `This field is too long. It must be no more than ${rule.limit}`);
-                valid = false; pass = false;
+            if (rule.required && trimmedValue === '') {
+                newErrors[field] = "This field is required";
+                isValid = false;
+            } else if (rule.limit && trimmedValue.length > rule.limit) {
+                newErrors[field] = `Maximum ${rule.limit} characters allowed`;
+                isValid = false;
+            } else if (rule.min && trimmedValue.length < rule.min) {
+                newErrors[field] = `Minimum ${rule.min} characters required`;
+                isValid = false;
+            } else if (rule.isEmail && !regex.email.test(trimmedValue)) {
+                newErrors[field] = "Invalid email format";
+                isValid = false;
             }
+        }
 
-
-            if (rule?.min && rule?.required && value.trim().length < rule?.min) {
-                handleFieldError(field, `${field[0].toUpperCase() + field.slice(1)} is too short. It must be at least ${rule.min} alphanumeric characters`);
-                valid = false; pass = false;
-            }
-
-            if (rule?.required && value.trim() == '') {
-                handleFieldError(field, "This field is required");
-                valid = false; pass = false;
-            }
-
-            if (rule?.isEmail && !regex.email.test(value.trim())) {
-                handleFieldError(field, "This field must be in email format.");
-                valid = false; pass = false;
-            }
-
-            if (pass) handleFieldError(field, "")
-        });
-
-        return valid;
+        setFieldError(newErrors);
+        return isValid;
     }
 
     const handleChange = (e) => {
-        setCredentials(() => {
-            return {
-                ...credentials,
-                [e.target.name]: e.target.value
-            }
-        });
+        const { name, value } = e.target;
+        setCredentials(prev => ({ ...prev, [name]: value }));
+        if (fieldError[name]) {
+            setFieldError(prev => ({ ...prev, [name]: '' }));
+        }
     }
 
     const handleFeedback = (responses) => {
-        let errorFeedback = [{}];
-        Object.entries(responses).forEach(([_, messages]) => {
-            console.log(messages)
-            const message = messages.join(', ');
-            errorFeedback = [...errorFeedback, { type: 'error', message: message }];
-            setFeedback(errorFeedback)
-        });
+        const mappedErrors = Object.values(responses).map(messages => ({
+            type: 'error',
+            message: messages.join(', ')
+        }));
+        setFeedback(mappedErrors);
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setFeedback([]);
+
+        if (!validateFields()) return;
+
+        setLoading(true);
+
+        try {
+            const response = await authService.register(credentials);
+
+            if (response.status === 200) {
+                navigate('/login');
+            } else if (response.status === 400) {
+                handleFeedback(response.data);
+            }
+        } catch (error) {
+            setFeedback([{ type: 'error', message: 'An unexpected error occurred. Please try again.' }]);
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
-        <div className='absolute left-0 top-0 max-w-full w-full max-h-screen h-full bg-black/10 backdrop-blur overflow-hidden
-                        flex justify-center items-center
-        '>
-            <div className='bg-slate-100 w-180 p-4 rounded-xl border border-slate-300 transition-all'>
-                <div className='text-md flex flex-col items-center justify-between mb-8'>
-                    <h5 className='text-slate-700 text-xs font-semibold tracking-wide'>Sign Up</h5>
-                    <h1 className='font-bold text-lg text-slate-800'>We-Goat</h1>
+        <div className='relative left-0 top-0 max-w-full w-full h-screen bg-linear-to-br from-neutral-800 to-neutral-900 backdrop-blur overflow-hidden flex justify-center items-center'>
+            <div className='w-100 p-4 rounded-xl transition-all'>
+
+                <div className='text-md flex flex-col items-center justify-between'>
+                    <h1 className='text-mauve-50 text-2xl font-semibold mt-12 mb-4'>
+                        Create your account
+                    </h1>
+
+                    <Link to='/login' className='text-mauve-400 text-sm'>
+                        Already have an account? <strong className='text-mauve-100'>Login here</strong>
+                    </Link>
                 </div>
-                <form onSubmit={async (e) => {
-                    e.preventDefault();
-                    setLoading(true);
-                    try {
 
-                        if (!validateFields()) return
+                <form onSubmit={handleSubmit} className='flex flex-col p-2 gap-4 my-12'>
 
-                        const response = await authService.register(credentials);
+                    <Input
+                        type='text'
+                        name='firstName'
+                        value={credentials.firstName}
+                        onChange={handleChange}
+                        placeholder='First name'
+                        hasCounter={false}
+                        error={fieldError.firstName}
+                        onClear={clearField}
+                        className='rounded-2xl bg-neutral-900'
+                    />
 
+                    <Input
+                        type='text'
+                        name='lastName'
+                        value={credentials.lastName}
+                        onChange={handleChange}
+                        placeholder='Last name'
+                        hasCounter={false}
+                        error={fieldError.lastName}
+                        onClear={clearField}
+                        className='rounded-2xl bg-neutral-900'
+                    />
 
-                        if (response.status == 200) {
-                            navigate('/login')
-                        }
-                        if (response.status == 400) {
-                            handleFeedback(response.data)
-                        }
-                    } catch {
-                        console.log('')
-                    } finally {
-                        setLoading(false);
-                    }
+                    <Input
+                        type='text'
+                        name='email'
+                        value={credentials.email}
+                        onChange={handleChange}
+                        placeholder='Email address'
+                        hasCounter={false}
+                        error={fieldError.email}
+                        onClear={clearField}
+                        className='rounded-2xl bg-neutral-900'
+                    />
 
-                }}
-                    className='flex flex-col p-2 gap-4'
-                >
-                    <div className='grid grid-cols-3 gap-2'>
-                        <Input
-                            type='text'
-                            name='firstName'
-                            label='First Name'
-                            value={credentials.firstName}
-                            onChange={handleChange}
-                            error={fieldError.firstName}
-                            onClear={clearField}
-                        />
-                        <Input
-                            type='text'
-                            name='lastName'
-                            label='Last Name'
-                            value={credentials.lastName}
-                            onChange={handleChange}
-                            error={fieldError.lastName}
-                            onClear={clearField}
-                        />
-                        <Input
-                            type='text'
-                            name='email'
-                            label='Email Address'
-                            value={credentials.email}
-                            onChange={handleChange}
-                            error={fieldError.email}
-                            onClear={clearField}
-                        />
-                    </div>
+                    <Input
+                        type='text'
+                        name='username'
+                        value={credentials.username}
+                        onChange={handleChange}
+                        placeholder='Username'
+                        hasCounter={false}
+                        error={fieldError.username}
+                        onClear={clearField}
+                        className='rounded-2xl bg-neutral-900'
+                    />
 
-                    <hr className='my-2 text-mauve-300 ' />
+                    <Input
+                        type='password'
+                        name='password'
+                        value={credentials.password}
+                        onChange={handleChange}
+                        placeholder='Password'
+                        hasCounter={false}
+                        error={fieldError.password}
+                        onClear={clearField}
+                        className='rounded-2xl bg-neutral-900'
+                    />
 
-                    <div className='grid grid-cols-2 gap-2'>
-                        <Input
-                            type='text'
-                            name='username'
-                            label='Username'
-                            value={credentials.username}
-                            onChange={handleChange}
-                            placeholder='Username'
-                            error={fieldError.username}
-                            onClear={clearField}
-                        />
-
-                        <Input
-                            type='password'
-                            name='password'
-                            label='Password'
-                            value={credentials.password}
-                            onChange={handleChange}
-                            placeholder='Password'
-                            error={fieldError.password}
-                            onClear={clearField}
-                        />
-                    </div>
-
-                    <Button type='submit' text='Login' loading={loading} />
+                    <Button
+                        type='submit'
+                        text='Sign Up'
+                        loading={loading}
+                        className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70'
+                    />
                 </form>
 
                 <Feedback feedback={feedback} />
-
-                <div className='w-80 flex mx-auto my-4 justify-center items-center text-center text-xs font-medium text-mauve-600'>
-                    <Link to='/login' className='hover:text-mauve-800 text-center'>Already have an account? Log in here</Link>
-                </div>
-
             </div>
-        </div >
+        </div>
     )
 }
 
