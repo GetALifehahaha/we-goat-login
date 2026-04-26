@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }) => {
             try {
                 const userData = await authService.checkAuthStatus();
 
+                console.log("User: ", userData)
+
                 if (userData) {
                     setUser(userData)
                 }

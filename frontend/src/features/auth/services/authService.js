@@ -46,9 +46,9 @@ class AuthService {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
 
-        return axios
-        .post(BASE_URL + '/logout/', {}, { withCredentials: true } )
-        .catch((error) => console.log("Logout error: ", error))
+        // return axios
+        // .post(BASE_URL + '/logout/', {}, { withCredentials: true } )
+        // .catch((error) => console.log("Logout error: ", error))
     }
 
     async register( credentials ) {
@@ -147,7 +147,7 @@ class AuthService {
                 this.token = response.data.token;
             }
 
-            return this.decodeToken();
+            return {...this.decodeToken(), ...response.data};
         } catch (error) {
             console.log("Error checking status; ", error)
             this.token = null;

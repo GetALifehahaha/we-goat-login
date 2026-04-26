@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Login, Register, ProtectedRoute } from './features/auth'
 import { BlogPage } from './features/blog/'
+import { Layout } from './features/shared'
 
 function App() {
 
@@ -8,7 +9,7 @@ function App() {
     <Routes>
       <Route path='/login' element={<Login />} />
       <Route path='/signup' element={<Register />} />
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route index element={<BlogPage />} />
       </Route>
     </Routes>
