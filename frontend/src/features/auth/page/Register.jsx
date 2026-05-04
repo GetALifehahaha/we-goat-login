@@ -85,13 +85,13 @@ const Register = () => {
         try {
             const response = await authService.register(credentials);
 
-            if (response.status === 200) {
-                navigate('/login');
-            } else if (response.status === 400) {
+            if (response.status === 400) {
                 Object.entries(response.data).map(([key, value]) => handleFieldError(key, value.join(' ')))
             }
+
+            setFeedback({ type: 'success', message: "You have successfully registered an account. Welcome to We-Goat." })
         } catch (error) {
-            setFeedback([{ type: 'error', message: 'An unexpected error occurred. Please try again.' }]);
+            setFeedback({ type: 'error', message: 'An unexpected error occurred. Please try again.' });
         } finally {
             setLoading(false);
         }

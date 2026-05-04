@@ -86,15 +86,6 @@ const Login = () => {
         });
     }
 
-    const handleFeedback = (responses) => {
-        const mappedErrors = Object.values(responses).map(messages => ({
-            type: 'error',
-            message: messages.join(', ')
-        }));
-        setFeedback(mappedErrors);
-    }
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setFeedback([]);
@@ -109,11 +100,11 @@ const Login = () => {
             if (response) {
                 navigate('/');
             } else if ([400, 401, 402, 403, 404, 405].find((error) => error == response.status)) {
-                handleFeedback(response.data);
+                Object.entries(response.data).map(([key, value]) => handleFieldError(key, value.join(' ')))
             }
 
         } catch (error) {
-            setFeedback([{ type: 'error', message: error }]);
+            setFeedback({ type: 'error', message: error });
         } finally {
             setLoading(false);
         }
@@ -135,7 +126,7 @@ const Login = () => {
 
                 </div>
                 <form onSubmit={handleSubmit}
-                    className='flex flex-col p-2 gap-4 my-12'
+                    className='flex flex-col p-2 gap-4 my-12 mb-6'
                 >
                     <Input
                         type='text'
