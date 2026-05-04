@@ -1,9 +1,17 @@
-import React from 'react'
+import webgoat from '../../../assets/images/image.png'
+import hashing from '../../../assets/images/hashing.png'
 
 const BlogPage = () => {
+    const authors = [
+        "Lutian, E. D. S.",
+        "Sahid, A. M.",
+        "Sencio, A. J.",
+        "Toong, J. A."
+    ]
+
     return (
         <div className='w-full min-h-full'>
-            <div className='w-full h-64 md:h-80 bg-mauve-600 rounded-2xl relative'>
+            <div className='w-full h-64 md:h-80 bg-mauve-600 rounded-2xl relative mb-32'>
                 <div className='absolute min-w-[80%] md:min-w-1/3 w-fit p-6 md:p-20 h-auto md:h-20 bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rounded-3xl md:rounded-4xl bg-neutral-950 border border-white/10
                     flex flex-col justify-center items-center text-center
                 '>
@@ -13,6 +21,35 @@ const BlogPage = () => {
                     <h5 className='text-mauve-200/50 tracking-wide text-sm md:text-base mt-2 md:mt-0'>
                         Complexity beneath Simplicity
                     </h5>
+                </div>
+            </div>
+
+            {/* Authors and Time Information */}
+            <div className='py-4 border-y border-white/20 text-white flex flex-col gap-2'>
+                <h2 className='text-white/80'>
+                    We-Goat Group
+                </h2>
+                <div className='flex flex-wrap items-center gap-4 p-1.5 border border-white/10 rounded-2xl'>
+                    <h5 className=''>Authors: </h5>
+                    {
+                        authors.map((name, index) =>
+                            <h5
+                                key={index}
+                                className='font-semibold'
+                            >
+                                {name}
+                            </h5>
+                        )
+                    }
+                </div>
+                <div className='flex flex-wrap gap-4 items-center text-sm tracking-wide text-white/50'>
+                    <h5>
+                        Western Mindanao State University
+                    </h5>
+                    <h5>
+                        Bachelor of Science in Information Technology
+                    </h5>
+                    <h5>3-A</h5>
                 </div>
             </div>
 
@@ -31,6 +68,7 @@ const BlogPage = () => {
                 </h5>
             </div>
 
+            {/* Part 2 */}
             <div className='text-white flex flex-col gap-8 md:gap-16 mx-auto md:ml-auto w-[90%] md:w-2/3 mt-24 md:mt-40 border-y-2 border-white/20 py-10 md:py-16'>
                 <h2 className='text-2xl md:text-4xl font-semibold'>
                     For example, in the activities provided in the WebGoat, we will learn that:
@@ -49,6 +87,63 @@ const BlogPage = () => {
                         Sessions can be hijacked if tokens are predictable or not invalidated properly
                     </li>
                 </ol>
+            </div>
+
+            {/* Part 3 */}
+
+            <div className='text-white flex flex-col gap-8 md:gap-16 mx-auto md:ml-auto w-[90%] md:w-2/3 border-y-2 border-white/20 py-10 md:py-16'>
+                <h2 className='text-2xl md:text-4xl font-semibold'>
+                    Then, what happens when security is compromised?
+                </h2>
+
+                <ol className="flex flex-col gap-4 pl-4 md:pl-0">
+                    <li className='list-decimal text-neutral-300 text-base md:text-lg'>
+                        Attackers log in as legitimate users. They can change passwords, update email addresses, and permanently lock the real users out of their own accounts.
+                    </li>
+
+                    <li className='list-decimal text-neutral-300 text-base md:text-lg'>
+                        If an attacker compromises a standard user account, they will try to find vulnerabilities to escalate their permissions to an "Admin" or "Superuser" role. If an admin account is compromised directly, the attacker essentially owns the entire system.
+                    </li>
+
+                    <li className='list-decimal text-neutral-300 text-base md:text-lg'>
+                        Once inside, attackers will scrape databases for Personally Identifiable Information (PII), financial records, or proprietary business data.
+                    </li>
+                </ol>
+            </div>
+
+            {/* Part 4 */}
+            <div className='text-white flex flex-col gap-8 md:gap-16 mx-auto md:ml-auto w-[90%] md:w-2/3 border-y-2 border-white/20 py-10 md:py-16'>
+                <h2 className='text-2xl md:text-4xl font-semibold'>
+                    So, what can we do?
+                </h2>
+
+                <p>There are numerous ways to create a secure authentication point and prevent attackers from illegitimately entering your website.</p>
+
+            </div>
+
+            {/* Part 5: Ways to Prevent Attacks */}
+            <div className='flex flex-col gap-16 my-8 text-white w-full md:w-[80vw] mx-auto'>
+                <div className='flex flex-col gap-2'>
+                    <h4 className='text-center text-xl'>One such way is by learning basic security fundamentals thru <strong>WebGoat</strong></h4>
+                    <img src={webgoat} className='rounded-2xl border-white/20 border' />
+                    <p>Learn how attackers force through security measures. We will be able to simulate attacks, such as SQL injections, interceptors, and scripting. As such, we will be able to implement security measures that will make our applications more secure.</p>
+                </div>
+
+                <div className='flex flex-col gap-2'>
+                    <h4 className='text-center text-xl'>Another thing to do is how we handle passwords in our databases</h4>
+                    <p>Hashing passwords is one way to do it. Most ORM and backend framework, such as Django for this instance, use a hashing algorithm to store passwords. <strong>Hashing </strong> is a security function that transforms a string of text into a jumbled of words that cannot be retrieved back.</p>
+                    <img src={hashing} className='rounded-2xl border-white/20 border' />
+                    <p>The way to get access into an account is by using the same hash function to an input password and compare it to the on stored in the database. When it matches, you will gain access to your account.</p>
+
+                    <p className='mt-18'>Similarly, backend frameworks commonly has an input sanitization that prevents SQL injection and other malicious inputs.</p>
+                </div>
+
+                <div className='flex flex-col gap-2'>
+                    <h4 className='text-center text-xl'>Authentication should neither be generous nor considerate.</h4>
+                    <div className='flex flex-col md:grid grid-cols-2 gap-4'>
+
+                    </div>
+                </div>
             </div>
 
             <div className='mt-24 md:mt-40 p-6 md:p-8 py-12 md:py-16 rounded-2xl bg-white flex flex-col gap-8 md:gap-16 relative w-[95%] md:w-full mx-auto'>

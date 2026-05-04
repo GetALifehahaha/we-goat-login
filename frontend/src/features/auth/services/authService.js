@@ -35,7 +35,7 @@ class AuthService {
             console.error("Login error: ", error.status)
 
             if (error.status === 401) {
-                throw "Invalid username or password."
+                throw "Invalid user credentials. Please try again"
             }
             throw error
         }
