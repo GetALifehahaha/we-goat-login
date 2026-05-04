@@ -16,7 +16,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const [credentials, setCredentials] = useState({
-        firstName: '', lastName: '', email: '', username: '', password: ''
+        firstName: 'Ahlan-nour', lastName: 'Sencio', email: 'hz202300049@wmsu.edu.ph', username: 'supa1dol123', password: 'qwertyui'
     });
 
     const [fieldError, setFieldError] = useState({
@@ -67,12 +67,11 @@ const Register = () => {
         }
     }
 
-    const handleFeedback = (responses) => {
-        const mappedErrors = Object.values(responses).map(messages => ({
-            type: 'error',
-            message: messages.join(', ')
-        }));
-        setFeedback(mappedErrors);
+    const handleFieldError = (key, value) => {
+        setFieldError(prev => {
+            console.log(prev)
+            return { ...prev, [key]: value }
+        })
     }
 
     const handleSubmit = async (e) => {
@@ -89,7 +88,7 @@ const Register = () => {
             if (response.status === 200) {
                 navigate('/login');
             } else if (response.status === 400) {
-                handleFeedback(response.data);
+                Object.entries(response.data).map(([key, value]) => handleFieldError(key, value.join(' ')))
             }
         } catch (error) {
             setFeedback([{ type: 'error', message: 'An unexpected error occurred. Please try again.' }]);
