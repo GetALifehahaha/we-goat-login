@@ -1,5 +1,8 @@
 import webgoat from '../../../assets/images/image.png'
 import hashing from '../../../assets/images/hashing.png'
+import login_error from '../../../assets/images/login_error.png'
+import login_validate from '../../../assets/images/login_validate.png'
+import password_validate from '../../../assets/images/password_validate.png'
 
 const BlogPage = () => {
     const authors = [
@@ -131,17 +134,22 @@ const BlogPage = () => {
 
                 <div className='flex flex-col gap-2'>
                     <h4 className='text-center text-xl'>Another thing to do is how we handle passwords in our databases</h4>
-                    <p>Hashing passwords is one way to do it. Most ORM and backend framework, such as Django for this instance, use a hashing algorithm to store passwords. <strong>Hashing </strong> is a security function that transforms a string of text into a jumbled of words that cannot be retrieved back.</p>
+                    <p>Hashing passwords is one way to do it. Most ORM and backend framework, such as Django for this instance, uses a hashing algorithm to store passwords. <strong>Hashing </strong> is a security function that transforms a string of text into a jumbled mess of characters where the original text cannot be retrieved back thru the same function..</p>
                     <img src={hashing} className='rounded-2xl border-white/20 border' />
-                    <p>The way to get access into an account is by using the same hash function to an input password and compare it to the on stored in the database. When it matches, you will gain access to your account.</p>
-
-                    <p className='mt-18'>Similarly, backend frameworks commonly has an input sanitization that prevents SQL injection and other malicious inputs.</p>
+                    <p>The only way to get access into an account is by using the same hash function to an input password and compare it to the hashed password stored in the database. If it matches, you will gain access to your account. Similarly, backend frameworks commonly has an input sanitization that prevents SQL injection and other malicious inputs.</p>
                 </div>
 
-                <div className='flex flex-col gap-2'>
-                    <h4 className='text-center text-xl'>Authentication should neither be generous nor considerate.</h4>
-                    <div className='flex flex-col md:grid grid-cols-2 gap-4'>
-
+                <div className='flex flex-col gap-8'>
+                    <h4 className='text-center text-2xl font-bold'>Authentication should neither be generous nor considerate.</h4>
+                    <div className='flex flex-col gap-4'>
+                        <div>
+                            <h5>Be <strong>vague</strong> about user credentials when logging in. Rather then telling the user that the username is wrong or the password is wrong, tell the user that both doesn't match. This keeps guessing for accounts, which serves as a basic authentication security.</h5>
+                            <img src={login_error} className='rounded-2xl border-white/20 border' />
+                        </div>
+                        <div>
+                            <h5>Prevent users from registering with a <strong>weak password</strong>. This will help prevent bruteforce attacks from attackers at the cost of user experience/conveniece. Django has a built-in password validations, such as preventing common passwords, numeric ones, similar with username, and minimum length. We added a few new validations which requires 1 special character, 1 small character, and 1 capital character.</h5>
+                            <img src={password_validate} className='rounded-2xl border-white/20 border' />
+                        </div>
                     </div>
                 </div>
             </div>
