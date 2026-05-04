@@ -25,7 +25,9 @@ class AuthService {
                 this.token = response.data.token
                 localStorage.setItem('token', this.token);
                 localStorage.setItem('refreshToken', response.data.refresh);
-                return this.decodeToken(response.data.token)
+
+                const fullUserData = await this.checkAuthStatus();
+                return fullUserData;
             }
 
             throw new Error("No access token received.") 

@@ -3,6 +3,7 @@ import cn from '../utils/cn'
 import { Dot } from 'lucide-react'
 
 const Feedback = ({ feedback }) => {
+    console.log("Feedback: ", feedback)
 
     const listFeedback = feedback.map(({ type, message }, index) => {
         if (type && message) return <h5 key={index}

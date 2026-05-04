@@ -4,8 +4,6 @@ import cn from '../utils/cn'
 
 const Input = ({ type, name, label, value, error = "Error", placeholder = '', hasCounter = true, isNumber = false, onChange, onClear, className }) => {
 
-    console.log(error)
-
     const REGEX = /^[0-9]*$/
 
     const validateInput = (e) => {

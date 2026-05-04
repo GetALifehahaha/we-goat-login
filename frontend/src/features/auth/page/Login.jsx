@@ -165,7 +165,7 @@ const Login = () => {
                     />
 
                     <Button type='submit' loading={loading} text='Login' className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70 mt-0' />
-                    <Link to='/forgotPassword' className='text-white text-xs font-semibold'>Forgot Password?</Link>
+                    {/* <Link to='/forgotPassword' className='text-white text-xs font-semibold'>Forgot Password?</Link> */}
                 </form>
 
                 <Feedback feedback={feedback} />

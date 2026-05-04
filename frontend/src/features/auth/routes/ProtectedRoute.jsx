@@ -9,7 +9,6 @@ const ProtectedRoute = ({ children }) => {
         return <h5>Loading...</h5>
     }
 
-    // ! Error, not properly handling reroutes to children after login
     if (!user) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
