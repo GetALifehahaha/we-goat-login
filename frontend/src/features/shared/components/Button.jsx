@@ -17,7 +17,9 @@ const Button = ({ text, icon: Icon, onClick, disabled, loading = false, classNam
             {Icon &&
                 <Icon size={16} />
             }
-            <h5>{text}</h5>
+            {text &&
+                <h5>{text}</h5>
+            }
             {loading &&
                 <LoaderCircle size={16} className='animate-spin' />
             }

@@ -1,115 +1,61 @@
-import { useState } from 'react'
+import { useActionState } from 'react'
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Input, Button, PageLogo, Feedback } from '../../shared/';
+import { Input, Button, PageLogo } from '../../shared/';
 import { useNavigate } from 'react-router-dom';
-
-const rules = [
-    {
-        field: 'username', limit: 255, min: 8, required: true
-    },
-    {
-        field: 'password', limit: 255, min: 8, required: true
-    }
-]
+import loginSchema from '../schemas/loginSchema';
+import * as z from 'zod';
 
 const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [credentials, setCredentials] = useState({
-        username: 'jonathan', password: '2pilak123'
-    });
 
-    const [fieldError, setFieldError] = useState({
-        username: '', password: ''
-    });
+    const loginAction = async (_, formData) => {
+        const credentials = {
+            username: formData.get("username"),
+            password: formData.get("password")
+        }
 
-    const [feedback, setFeedback] = useState([]);
-    const [loading, setLoading] = useState(false);
+        const result = loginSchema.safeParse(credentials);
 
-    const handleFieldError = (field, message) => {
-        setFieldError((prevErrors) => {
+        if (!result.success) {
+            const flat = z.flattenError(result.error);
+
             return {
-                ...prevErrors,
-                [field]: message
+                payload: credentials,
+                errors: flat.fieldErrors,
+                globalError: null,
+                success: false
             }
-        })
-    }
-
-    const clearField = (field) => {
-        setCredentials(credentials => {
-            return {
-                ...credentials, [field]: ''
-            }
-        })
-    }
-
-    const validateFields = () => {
-        let valid = true;
-
-        Object.entries(credentials).forEach((info) => {
-            const field = info[0]; const value = info[1];
-
-            const rule = rules.find(rule => rule.field == field);
-            let pass = true;
-
-            if (rule?.limit && value.trim().length > rule?.limit) {
-                handleFieldError(field, `This field is too long. It must be no more than ${rule.limit}`);
-                valid = false; pass = false;
-            }
-
-
-            if (rule?.min && rule?.required && value.trim().length < rule?.min) {
-                handleFieldError(field, `${field[0].toUpperCase() + field.slice(1)} is too short. It must be at least ${rule.min} alphanumeric characters`);
-                valid = false; pass = false;
-            }
-
-            if (rule?.required && value.trim() == '') {
-                handleFieldError(field, "This field is required");
-                valid = false; pass = false;
-            }
-
-            if (pass) handleFieldError(field, "")
-        });
-
-        // console.log("Validated: ", valid)
-        return valid;
-    }
-
-
-    const handleChange = (e) => {
-        setCredentials(() => {
-            return {
-                ...credentials,
-                [e.target.name]: e.target.value
-            }
-        });
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setFeedback([]);
-
-        if (!validateFields()) return;
-
-        setLoading(true);
+        }
 
         try {
-            const response = await login(credentials);
+            await login(credentials);
 
-            if (response) {
-                navigate('/');
-            } else if ([400, 401, 402, 403, 404, 405].find((error) => error == response.status)) {
-                Object.entries(response.data).map(([key, value]) => handleFieldError(key, value.join(' ')))
+            navigate('/');
+            return {
+                payload: {},
+                globalError: null,
+                errors: null,
+                success: true
             }
-
         } catch (error) {
-            setFeedback({ type: 'error', message: error });
-        } finally {
-            setLoading(false);
+            console.log(error)
+            return {
+                payload: credentials,
+                errors: null,
+                globalError: error,
+                success: false
+            }
         }
     }
 
+    const [loginState, formAction, isPending] = useActionState(loginAction, {
+        payload: {},
+        errors: {},
+        globalError: null,
+        success: false
+    })
 
     return (
         <div className='relative left-0 top-0 max-w-full w-full h-screen bg-linear-to-br from-neutral-800 to-neutral-900 backdrop-blur overflow-hidden
@@ -125,37 +71,31 @@ const Login = () => {
                     <Link to='/signup' className='text-mauve-400 text-sm'>New to We-Goat? <strong className='font-bold text-mauve-100'>Signup here</strong></Link>
 
                 </div>
-                <form onSubmit={handleSubmit}
+                <form action={formAction}
                     className='flex flex-col p-2 gap-4 my-12 mb-6'
                 >
                     <Input
+                        label="Username"
                         type='text'
                         name='username'
-                        value={credentials.username}
-                        hasCounter={false}
-                        onChange={handleChange}
+                        defaultValue={loginState?.payload?.username || ""}
                         placeholder='Your username'
-                        error={fieldError.username}
-                        onClear={clearField}
+                        error={loginState?.errors?.username?.join('. ')}
                         className=' rounded-2xl bg-neutral-900'
                     />
 
                     <Input
+                        label="Password"
                         type='password'
                         name='password'
-                        hasCounter={false}
-                        value={credentials.password}
-                        onChange={handleChange}
+                        defaultValue={loginState?.payload?.password || ""}
                         placeholder='Your password'
-                        error={fieldError.password}
-                        onClear={clearField}
+                        error={loginState?.errors?.password?.join('. ')}
                         className='rounded-2xl bg-neutral-900 relative'
-
                     />
-                    <Button type='submit' loading={loading} text='Login' className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70 mt-0' />
+                    <Button type='submit' loading={isPending} text='Login' className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70 mt-0' />
+                    {loginState?.globalError && <h5 className='text-sm text-red-400 rounded p-2 text-center border border-red-400'>{loginState?.globalError}</h5>}
                 </form>
-
-                <Feedback feedback={feedback} />
 
                 <hr className='w-full text-white/20' />
                 <h5 className='text-xs text-white/30 text-center mt-2 font-light tracking-wide'>Empowered by Django, DRF, and React</h5>
