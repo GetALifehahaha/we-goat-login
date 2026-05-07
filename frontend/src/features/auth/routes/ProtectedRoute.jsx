@@ -5,8 +5,7 @@ import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const ProtectedRoute = ({ children }) => {
-    const { user, } = useAuth();
-    const loading = true
+    const { user, loading } = useAuth();
     const location = useLocation();
     const [countUp, setCountup] = useState(0);
 
