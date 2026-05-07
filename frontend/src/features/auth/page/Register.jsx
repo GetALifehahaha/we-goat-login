@@ -1,7 +1,7 @@
 import { useActionState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService.js'
-import { Input, Button, PageLogo } from '../../shared/';
+import { Input, Button } from '../../shared/';
 import registerSchema from '../schemas/registerSchema';
 import * as z from 'zod';
 
