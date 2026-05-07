@@ -5,12 +5,10 @@ const registerSchema = z.object({
         .string()
         .trim()
         .nonempty("First name is required")
-        .min(8, "First name must be at least 8 characters")
         .max(255),
     last_name: z
         .string()
         .trim()
-        .min(8, "Last name must be at least 8 characters")
         .max(255),
     email: z
         .email()
