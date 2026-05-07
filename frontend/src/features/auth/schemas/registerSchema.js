@@ -9,6 +9,7 @@ const registerSchema = z.object({
     last_name: z
         .string()
         .trim()
+        .nonempty("Last name is required")
         .max(255),
     email: z
         .email()

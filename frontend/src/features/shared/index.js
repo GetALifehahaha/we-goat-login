@@ -13,6 +13,7 @@ export {default as PageLogo} from './components/PageLogo.jsx'
 // CONFIG
 
 // PAGE
+export {default as NotFound} from './pages/NotFound.jsx'
 
 // UTILS
 export {default as cn} from './utils/cn'
