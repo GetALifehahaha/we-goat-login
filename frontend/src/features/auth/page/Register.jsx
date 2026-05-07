@@ -55,7 +55,7 @@ const Register = () => {
 
     return (
         <div className='relative left-0 top-0 max-w-full w-full h-screen bg-linear-to-br from-neutral-800 to-neutral-900 backdrop-blur overflow-hidden flex justify-center items-center'>
-            <div className='w-100 p-4 rounded-xl transition-all'>
+            <div className='w-120 p-4 rounded-xl transition-all'>
 
                 <div className='text-md flex flex-col items-center justify-between'>
                     <h1 className='text-mauve-50 text-2xl font-semibold mt-12 mb-4'>
@@ -68,7 +68,6 @@ const Register = () => {
                 </div>
 
                 <form action={formAction} className='flex flex-col p-2 gap-4 my-12'>
-
                     <div className='flex flex-col md:flex-row gap-2'>
 
                         <Input
@@ -92,25 +91,27 @@ const Register = () => {
                         />
                     </div>
 
-                    <Input
-                        type='text'
-                        name='email'
-                        label='Email Address'
-                        defaultValue={registerState?.payload?.email || ""}
-                        placeholder='Email address'
-                        error={registerState?.errors?.email?.join('. ')}
-                        className='rounded-2xl bg-neutral-900'
-                    />
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <Input
+                            type='text'
+                            name='email'
+                            label='Email Address'
+                            defaultValue={registerState?.payload?.email || ""}
+                            placeholder='Email address'
+                            error={registerState?.errors?.email?.join('. ')}
+                            className='rounded-2xl bg-neutral-900'
+                        />
 
-                    <Input
-                        type='text'
-                        name='username'
-                        label="Username"
-                        defaultValue={registerState?.payload?.username || ""}
-                        placeholder='Username'
-                        error={registerState?.errors?.username?.join('. ')}
-                        className='rounded-2xl bg-neutral-900'
-                    />
+                        <Input
+                            type='text'
+                            name='username'
+                            label="Username"
+                            defaultValue={registerState?.payload?.username || ""}
+                            placeholder='Username'
+                            error={registerState?.errors?.username?.join('. ')}
+                            className='rounded-2xl bg-neutral-900'
+                        />
+                    </div>
 
                     <Input
                         type='password'
