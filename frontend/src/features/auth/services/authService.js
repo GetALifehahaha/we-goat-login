@@ -47,22 +47,21 @@ class AuthService {
         this.failedQueue = []
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
-
-        // return axios
-        // .post(BASE_URL + '/logout/', {}, { withCredentials: true } )
-        // .catch((error) => console.log("Logout error: ", error))
     }
 
     async register( credentials ) {
-        return axios
-        .post(
-            BASE_URL + 
-            "/users/register/",
-            { first_name: credentials.firstName, last_name:credentials.lastName, email: credentials.email, username: credentials.username, password: credentials.password },
-            { withCredentials: true }
-        )
-        .catch((error) => ("Register error: ", error.response))
-        ;
+        try {
+            await axios.post(
+                BASE_URL + 
+                "/users/register/",
+                credentials,
+                { withCredentials: true }
+            )
+
+        } catch (error) {
+            console.log("Thrown error: ", error.response.data)
+            throw error.response.data
+        }
     }
 
 

@@ -1,101 +1,56 @@
-import { useState } from 'react'
+import { useActionState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
-import { Input, Button, regex, Feedback, PageLogo } from '../../shared/';
-
-const rules = [
-    { field: 'firstName', limit: 255, min: 2, required: true },
-    { field: 'lastName', limit: 255, min: 2, required: true },
-    { field: 'email', limit: 255, min: 8, required: true, isEmail: true },
-    { field: 'username', limit: 255, min: 4, required: true },
-    { field: 'password', limit: 255, min: 8, required: true },
-]
+import authService from '../services/authService.js'
+import { Input, Button, PageLogo } from '../../shared/';
+import registerSchema from '../schemas/registerSchema';
+import * as z from 'zod';
 
 const Register = () => {
-    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const [credentials, setCredentials] = useState({
-        firstName: 'Ahlan-nour', lastName: 'Sencio', email: 'hz202300049@wmsu.edu.ph', username: 'supa1dol123', password: 'qwertyui'
-    });
-
-    const [fieldError, setFieldError] = useState({
-        firstName: '', lastName: '', email: '', username: '', password: ''
-    });
-
-    const [feedback, setFeedback] = useState([]);
-
-    const clearField = (field) => {
-        setCredentials(prev => ({ ...prev, [field]: '' }));
-        setFieldError(prev => ({ ...prev, [field]: '' }));
-    }
-
-    const validateFields = () => {
-        let isValid = true;
-        const newErrors = { firstName: '', lastName: '', email: '', username: '', password: '' };
-
-        for (const [field, value] of Object.entries(credentials)) {
-            const rule = rules.find(r => r.field === field);
-            if (!rule) continue;
-
-            const trimmedValue = value.trim();
-
-            if (rule.required && trimmedValue === '') {
-                newErrors[field] = "This field is required";
-                isValid = false;
-            } else if (rule.limit && trimmedValue.length > rule.limit) {
-                newErrors[field] = `Maximum ${rule.limit} characters allowed`;
-                isValid = false;
-            } else if (rule.min && trimmedValue.length < rule.min) {
-                newErrors[field] = `Minimum ${rule.min} characters required`;
-                isValid = false;
-            } else if (rule.isEmail && !regex.email.test(trimmedValue)) {
-                newErrors[field] = "Invalid email format";
-                isValid = false;
-            }
+    const registerAction = async (_, formData) => {
+        const credentials = {
+            first_name: formData.get("first_name"),
+            last_name: formData.get("last_name"),
+            email: formData.get("email"),
+            username: formData.get("username"),
+            password: formData.get("password"),
         }
 
-        setFieldError(newErrors);
-        return isValid;
-    }
+        const result = registerSchema.safeParse(credentials)
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setCredentials(prev => ({ ...prev, [name]: value }));
-        if (fieldError[name]) {
-            setFieldError(prev => ({ ...prev, [name]: '' }));
+        if (!result.success) {
+            const flat = z.flattenError(result.error)
+
+            return { payload: credentials, errors: flat.fieldErrors, globalError: null, success: false }
         }
-    }
-
-    const handleFieldError = (key, value) => {
-        setFieldError(prev => {
-            console.log(prev)
-            return { ...prev, [key]: value }
-        })
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setFeedback([]);
-
-        if (!validateFields()) return;
-
-        setLoading(true);
 
         try {
-            const response = await authService.register(credentials);
+            await authService.register(credentials)
 
-            if (response.status === 400) {
-                Object.entries(response.data).map(([key, value]) => handleFieldError(key, value.join(' ')))
-            }
 
-            setFeedback({ type: 'success', message: "You have successfully registered an account. Welcome to We-Goat." })
+            return { payload: credentials, errors: {}, globalError: null, success: true }
         } catch (error) {
-            setFeedback({ type: 'error', message: 'An unexpected error occurred. Please try again.' });
-        } finally {
-            setLoading(false);
+            console.log("Register error caught: ", error)
+            return { payload: credentials, errors: { ...error }, globalError: null, success: false }
         }
     }
+
+    const [registerState, formAction, isPending] = useActionState(registerAction, {
+        payload: {},
+        errors: {},
+        globalError: null,
+        success: false
+    })
+
+    useEffect(() => {
+        if (registerState.success) {
+            setTimeout(() => {
+                navigate('/');
+            }, 3000)
+            clearTimeout();
+        }
+    }, [registerState.success, navigate])
 
     return (
         <div className='relative left-0 top-0 max-w-full w-full h-screen bg-linear-to-br from-neutral-800 to-neutral-900 backdrop-blur overflow-hidden flex justify-center items-center'>
@@ -111,77 +66,72 @@ const Register = () => {
                     </Link>
                 </div>
 
-                <form onSubmit={handleSubmit} className='flex flex-col p-2 gap-4 my-12'>
+                <form action={formAction} className='flex flex-col p-2 gap-4 my-12'>
 
                     <Input
                         type='text'
-                        name='firstName'
-                        value={credentials.firstName}
-                        onChange={handleChange}
+                        name='first_name'
+                        label='First Name'
                         placeholder='First name'
-                        hasCounter={false}
-                        error={fieldError.firstName}
-                        onClear={clearField}
+                        defaultValue={registerState?.payload?.first_name || ""}
+                        error={registerState?.errors?.first_name?.join('. ')}
                         className='rounded-2xl bg-neutral-900'
                     />
 
                     <Input
                         type='text'
-                        name='lastName'
-                        value={credentials.lastName}
-                        onChange={handleChange}
+                        name='last_name'
+                        label="Last Name"
+                        defaultValue={registerState?.payload?.last_name || ""}
                         placeholder='Last name'
-                        hasCounter={false}
-                        error={fieldError.lastName}
-                        onClear={clearField}
+                        error={registerState?.errors?.last_name?.join('. ')}
                         className='rounded-2xl bg-neutral-900'
                     />
 
                     <Input
                         type='text'
                         name='email'
-                        value={credentials.email}
-                        onChange={handleChange}
+                        label='Email Address'
+                        defaultValue={registerState?.payload?.email || ""}
                         placeholder='Email address'
-                        hasCounter={false}
-                        error={fieldError.email}
-                        onClear={clearField}
+                        error={registerState?.errors?.email?.join('. ')}
                         className='rounded-2xl bg-neutral-900'
                     />
 
                     <Input
                         type='text'
                         name='username'
-                        value={credentials.username}
-                        onChange={handleChange}
+                        label="Username"
+                        defaultValue={registerState?.payload?.username || ""}
                         placeholder='Username'
-                        hasCounter={false}
-                        error={fieldError.username}
-                        onClear={clearField}
+                        error={registerState?.errors?.username?.join('. ')}
                         className='rounded-2xl bg-neutral-900'
                     />
 
                     <Input
                         type='password'
                         name='password'
-                        value={credentials.password}
-                        onChange={handleChange}
+                        label="Password"
+                        defaultValue={registerState?.payload?.password || ""}
                         placeholder='Password'
-                        hasCounter={false}
-                        error={fieldError.password}
-                        onClear={clearField}
+                        error={registerState?.errors?.password?.join('. ')}
                         className='rounded-2xl bg-neutral-900'
                     />
 
                     <Button
-                        type='submit'
-                        text='Sign Up'
-                        loading={loading}
+                        type={registerState.success ? 'button' : 'submit'}
+                        text={registerState.success ? 'Proceed to Login Page' : 'Get Started!'}
+                        loading={isPending}
+                        onClick={() => {
+                            if (registerState.success) {
+                                navigate('/login')
+                            }
+                        }
+                        }
                         className='w-full rounded-2xl bg-white text-mauve-950 text-sm hover:w-full hover:bg-white/70'
                     />
+                    {registerState.success && <h5 className='text-sm text-green-500 p-1.5 rounded border border-green-700 text-center'>You have successfully registered to We-Goat! You will be automatically redirected to the login page in <strong>3</strong> seconds</h5>}
                 </form>
-
-                <Feedback feedback={feedback} />
             </div>
         </div>
     )

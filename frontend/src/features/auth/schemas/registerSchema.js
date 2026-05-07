@@ -4,12 +4,17 @@ const registerSchema = z.object({
     first_name: z
         .string()
         .trim()
+        .nonempty("First name is required")
         .min(8, "First name must be at least 8 characters")
         .max(255),
     last_name: z
         .string()
         .trim()
-        .min(8, "First name must be at least 8 characters")
+        .min(8, "Last name must be at least 8 characters")
+        .max(255),
+    email: z
+        .email()
+        .trim()
         .max(255),
     username: z
         .string()
@@ -21,8 +26,6 @@ const registerSchema = z.object({
         .trim()
         .min(8, "Password must be at least 8 characters")
         .max(255),
-    confirm_password: z
-        .refine(data => data.password === data.confirm_password)
 })
 
 export default registerSchema
