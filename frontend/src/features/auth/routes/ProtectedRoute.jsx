@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
     const location = useLocation();
 
-    if (true) {
+    if (loading) {
         return <div className="px-16 max-w-full w-full h-screen bg-linear-to-br from-neutral-800 to-neutral-900 backdrop-blur overflow-hidden
                         flex flex-col justify-center items-center text-center
         '">
