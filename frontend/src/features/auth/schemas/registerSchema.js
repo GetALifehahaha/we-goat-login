@@ -25,6 +25,12 @@ const registerSchema = z.object({
         .trim()
         .min(8, "Password must be at least 8 characters")
         .max(255),
+    confirm_password: z
+        .string()
+        .trim()
+}).refine((data) => data.password === data.confirm_password, {
+    message: "Passwords must match",
+    path: ['confirm_password']
 })
 
 export default registerSchema

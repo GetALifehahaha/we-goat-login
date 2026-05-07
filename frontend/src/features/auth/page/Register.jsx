@@ -15,6 +15,7 @@ const Register = () => {
             email: formData.get("email"),
             username: formData.get("username"),
             password: formData.get("password"),
+            confirm_password: formData.get("confirm_password")
         }
 
         const result = registerSchema.safeParse(credentials)
@@ -68,25 +69,28 @@ const Register = () => {
 
                 <form action={formAction} className='flex flex-col p-2 gap-4 my-12'>
 
-                    <Input
-                        type='text'
-                        name='first_name'
-                        label='First Name'
-                        placeholder='First name'
-                        defaultValue={registerState?.payload?.first_name || ""}
-                        error={registerState?.errors?.first_name?.join('. ')}
-                        className='rounded-2xl bg-neutral-900'
-                    />
+                    <div className='flex flex-col md:flex-row gap-2'>
 
-                    <Input
-                        type='text'
-                        name='last_name'
-                        label="Last Name"
-                        defaultValue={registerState?.payload?.last_name || ""}
-                        placeholder='Last name'
-                        error={registerState?.errors?.last_name?.join('. ')}
-                        className='rounded-2xl bg-neutral-900'
-                    />
+                        <Input
+                            type='text'
+                            name='first_name'
+                            label='First Name'
+                            placeholder='First name'
+                            defaultValue={registerState?.payload?.first_name || ""}
+                            error={registerState?.errors?.first_name?.join('. ')}
+                            className='rounded-2xl bg-neutral-900'
+                        />
+
+                        <Input
+                            type='text'
+                            name='last_name'
+                            label="Last Name"
+                            defaultValue={registerState?.payload?.last_name || ""}
+                            placeholder='Last name'
+                            error={registerState?.errors?.last_name?.join('. ')}
+                            className='rounded-2xl bg-neutral-900'
+                        />
+                    </div>
 
                     <Input
                         type='text'
@@ -115,6 +119,16 @@ const Register = () => {
                         defaultValue={registerState?.payload?.password || ""}
                         placeholder='Password'
                         error={registerState?.errors?.password?.join('. ')}
+                        className='rounded-2xl bg-neutral-900'
+                    />
+
+                    <Input
+                        type='password'
+                        name='confirm_password'
+                        label="Confirm Password"
+                        defaultValue={registerState?.payload?.confirm_password || ""}
+                        placeholder='Password'
+                        error={registerState?.errors?.confirm_password?.join('. ')}
                         className='rounded-2xl bg-neutral-900'
                     />
 
