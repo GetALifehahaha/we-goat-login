@@ -27,6 +27,6 @@ urlpatterns = [
     path('users/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
     path('me/', GetUserInformation.as_view(), name="me"),
 
-    path('', lambda request: HttpResponse("OK")),
+    path('/', lambda request: HttpResponse("OK")),
 
 ]
